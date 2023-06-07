@@ -1,0 +1,138 @@
+#Non Parametric Locally Weighed Regression Algorithm
+--------------------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def locally_weighted_regression(x, y, query_x, tau):
+    m = len(x)
+    n = len(query_x)
+    
+    y_pred = np.zeros(n)
+    
+    for i in range(n):
+        weights = np.exp(-np.sum((x - query_x[i])**2, axis=0) / (2 * tau**2))
+      
+        
+        numerator = np.sum(weights * y)
+        denominator = np.sum(weights)
+        
+        y_pred[i] = numerator / denominator
+    
+    return y_pred
+
+# Generate some synthetic data
+np.random.seed(42)
+X = np.linspace(0, 10, num=50)
+y = 2 * np.sin(X) + np.random.normal(0, 0.2, len(X))
+
+# Generate query points for fitting the curve
+query_x = np.linspace(0, 10, num=100)
+
+# Set the bandwidth parameter tau
+tau = 0.5
+
+# Fit the data points using Locally Weighted Regression
+y_pred = locally_weighted_regression(X, y, query_x, tau)
+
+# Plot the original data points
+plt.scatter(X, y, color='b', label='Data Points')
+
+# Plot the fitted curve
+plt.plot(query_x, y_pred, color='r', label='Locally Weighted Regression')
+
+plt.xlabel('X')
+plt.ylabel('y')
+plt.title('Locally Weighted Regression')
+plt.legend()
+plt.show()
+---------------------------------------------------------------------------------------------------------------
+#Logistic Regression
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+# Generate some synthetic data
+np.random.seed(42)
+X = np.random.randn(100, 2)
+y = np.random.randint(0, 2, 100)
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Create a logistic regression model
+model = LogisticRegression()
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Make predictions on the testing set
+y_pred = model.predict(X_test)
+
+# Calculate evaluation metrics
+accuracy = accuracy_score(y_test, y_pred)
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+# Print the evaluation metrics
+print("Accuracy:", accuracy)
+print("Precision:", precision)
+print("Recall:", recall)
+print("F1 Score:", f1)
+
+--------------------------------------------------------------------------------------------------------------------------
+#Binar Classifier
+from numpy import where
+from matplotlib import pyplot
+from collections import Counter
+from sklearn.datasets import make_blobs
+x,y=make_blobs(n_samples=1000,centers=2,random_state=1)
+print(x.shape,y.shape)
+counter=Counter(y)
+print(counter)
+for i in range(10):
+  print(x[i],y[i])
+for label,_ in counter.items():
+  row_i=where(y==label)[0]
+  pyplot.scatter(x[row_i,0],x[row_i,1],label=str(label))
+pyplot.legend()
+pyplot.show()
+----------------------------------------------------------------------------------------------------
+#bias and variance
+import numpy as np
+from sklearn.metrics import mean_squared_error
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split,cross_val_score, KFold
+np.random.seed(42)
+x=np.random.rand(20,1)*10
+
+y=2*x+np.random.randn(20,1)
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+model=LinearRegression()
+model.fit(x_train,y_train)
+ytrain_pre=model.predict(x_train)
+bias=np.mean((y_train - np.mean(ytrain_pre))**2)
+variance=np.var(ytrain_pre)
+print(bias)
+print(variance)
+#coss validation
+k = 5
+kf = KFold(n_splits=k, shuffle=True, random_state=42)
+mse_scores = -cross_val_score(model, x, y, scoring='neg_mean_squared_error', cv=kf)
+
+average_mse = np.mean(mse_scores)
+print("Average MSE (cross-validation):", average_mse)
+-----------------------------------------------------------------------------------------------------------
+#DropDuplicates
+import pandas as pd
+data={
+    "A":["teama","teamb","teamc","teama","teamb"],
+    "B":["t","f","t","t","f"]
+}
+d=pd.DataFrame(data)
+print(d.drop_duplicates())
+----------------------------------------------------------------------------------------------------------
+
